@@ -1,3 +1,17 @@
+<?php
+$warning="";
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+    $izena_post = isset($_POST['izena']) ? trim($_POST['izena']) : '';
+    $isan_post= isset($_POST['isan']) ? trim($_POST['isan']) : '';
+
+    if (empty($izena_post) && empty($isan_post)){
+        $warning= "Kontuz: izena eta ISAN eremuak ezin dira biak hutsik egon";
+    }
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,6 +58,17 @@
         </div>
         <br>
         <button type="submit">Bidali</button>
-</form>       
+</form>
+<?php
+
+
+
+
+
+
+
+
+
+?>
 </body>
 </html>
