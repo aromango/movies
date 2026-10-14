@@ -1,12 +1,28 @@
 <?php
 $warning="";
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-    $izena_post = isset($_POST['izena']) ? trim($_POST['izena']) : '';
-    $isan_post= isset($_POST['isan']) ? trim($_POST['isan']) : '';
+ // Filmen datuak berreskuratzeko array asoziatiboa
+$filmak = [];
+if (isset($_POST['filmak_hidden']) && !empty($_POST['filmak_hidden'])){
+    $filmak= json_decode($_POST['filmak_hidden'], true);
+}
 
+// Formularioaren datuak hartu
+
+$izena_post = isset($_POST['izena']) ? trim($_POST['izena']) : '';
+$isan_post= isset($_POST['isan']) ? trim($_POST['isan']) : '';
+$urtea_post = isset($_POST['urtea']) ? trim($_POST['urtea']) : '';
+$puntuazioa_post= isset($_POST['puntuazioa']) ? trim($_POST['puntuazioa']) : '0';
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+
+    // 1. Kasua: Izena eta ISAN hutsik
     if (empty($izena_post) && empty($isan_post)){
         $warning= "Kontuz: izena eta ISAN eremuak ezin dira biak hutsik egon";
+    }
+    // 2. Kasua: Filma gehitu
+    else{
+        $isan_existitzen_da=array_key_exists($isan_post, $filmak);
     }
 }
 
@@ -25,7 +41,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
         <p>Filmerik ez dago erregistratuta oraindik</p>
     </div>
     <hr>
-
+    <?php if (!empty($warning)):?>
+    <p style="color:red; font-weight:bold;"><?=$warning?></p>
+    <?php endif; ?>    
     <h2>Filmen Formularioa</h2>
     <form action="main.php" method="POST">
         <div>
