@@ -23,6 +23,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     // 2. Kasua: Filma gehitu
     else{
         $isan_existitzen_da=array_key_exists($isan_post, $filmak);
+
+        if(!$isan_existitzen_da && strlen($isan_post) == 8 && !empty($izena_post) && !empty($urtea_post)){
+
+            $filmak[$isan_post]=[
+                'izena' => $izena_post,
+                'urtea' => $urtea_post,
+                'puntuazioa' => $puntuazioa_post
+            ];
+
+            $izena_post="";
+            $isan_post="";
+            $urtea_post="";
+            $puntuazioa_post="0";
+        }
+        else if (!$isan_existitzen_da){
+            $warning="Kontuz: eremu guztiak bete behar dira eta ISAN-ak 8 digitu izan behar ditu!";
+        }
+    
     }
 }
 
@@ -38,7 +56,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 <body>
     <h1>Erabiltzailearen filmak</h1>
     <div id="zerrenda">
-        <p>Filmerik ez dago erregistratuta oraindik</p>
+        <?php if (empty($filmak)): ?>
+            <p>Filmerik ez dago erregistratuta oraindik</p>
+        <?php else: ?>
+            <table border="1" style="border-collapse: collapse; padding: 5px;">
+                <thead>
+                    <tr>
+                        <th>ISAN</th>
+                        <th>Izena</th>
+                        <th>Urtea</th>
+                        <th>Puntuazioa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($filmak as $isan => $film): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($isan) ?></td>
+                            <td><?= htmlspecialchars($film['izena']) ?></td>
+                            <td><?= htmlspecialchars($film['urtea']) ?></td>
+                            <td><?= htmlspecialchars($film['puntuazioa']) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
     </div>
     <hr>
     <?php if (!empty($warning)):?>
@@ -46,47 +87,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     <?php endif; ?>    
     <h2>Filmen Formularioa</h2>
     <form action="main.php" method="POST">
+        <!-- Ezkutuko eremua array-a orriz orri mantentzeko -->
+        <input type="hidden" name="filmak_hidden" value="<?= htmlspecialchars(json_encode($filmak)) ?>">
+
         <div>
-            <label>Filmaren izena:</label><br>
-            <input type="text" id="izena" name="izena">
+            <label for="izena">Filmaren izena:</label><br>
+            <input type="text" id="izena" name="izena" value="<?= htmlspecialchars($izena_post) ?>">
         </div>
         <br>
 
         <div>
-            <label>ISAN</label><br>
-            <input type="text" id="isan" name="isan">
+            <label for="isan">ISAN (8 digitu):</label><br>
+            <input type="text" id="isan" name="isan" value="<?= htmlspecialchars($isan_post) ?>">
         </div>
         <br>
 
         <div>
-            <label>Urtea</label><br>
-            <input type="text" id="urtea" name="urtea">
+            <label for="urtea">Urtea:</label><br>
+            <input type="text" id="urtea" name="urtea" value="<?= htmlspecialchars($urtea_post) ?>">
         </div>
         <br>
         <div>
-            <label>Puntuazioa:</label><br>
+            <label for="puntuazioa">Puntuazioa:</label><br>
             <select id="puntuazioa" name="puntuazioa">
-                <option value="0">0</option>
-                <option value="0">1</option> 
-                <option value="0">2</option> 
-                <option value="0">3</option> 
-                <option value="0">4</option> 
-                <option value="0">5</option>
+                <?php for ($i = 0; $i <= 5; $i++): ?>
+                    <option value="<?= $i ?>" <?= ($puntuazioa_post == (string)$i) ? 'selected' : '' ?>>
+                        <?= $i ?>
+                    </option>
+                <?php endfor; ?>
             </select>
         </div>
         <br>
         <button type="submit">Bidali</button>
-</form>
-<?php
-
-
-
-
-
-
-
-
-
-?>
+    </form>
 </body>
 </html>
