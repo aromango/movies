@@ -24,6 +24,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     else{
         $isan_existitzen_da=array_key_exists($isan_post, $filmak);
 
+    // 4. Kasua: ISANa eguneratu existitzen bada
+
+        if($isan_existitzen_da && !empty($izena_post) && !empty($urtea_post)){
+            $filmak[$isan_post]['izena'] = $izena_post;
+            $filmak[$isan_post]['puntuazioa'] = $puntuazioa_post;
+
+            // Formularioa garbitu
+            $izena_post = '';
+            $isan_post = '';
+            $urtea_post = '';
+            $puntuazioa_post = '0';
+
+        }
+
         if(!$isan_existitzen_da && strlen($isan_post) == 8 && !empty($izena_post) && !empty($urtea_post)){
 
             $filmak[$isan_post]=[
