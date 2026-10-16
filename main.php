@@ -14,21 +14,56 @@ $isan_post= isset($_POST['isan']) ? trim($_POST['isan']) : '';
 $urtea_post = isset($_POST['urtea']) ? trim($_POST['urtea']) : '';
 $puntuazioa_post= isset($_POST['puntuazioa']) ? trim($_POST['puntuazioa']) : '0';
 
+$filmak_bistaratu=$filmak;
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
 
     // 1. Kasua: Izena eta ISAN hutsik
     if (empty($izena_post) && empty($isan_post)){
         $warning= "Kontuz: izena eta ISAN eremuak ezin dira biak hutsik egon";
     }
-    // 2. Kasua: Filma gehitu
     else{
         $isan_existitzen_da=array_key_exists($isan_post, $filmak);
 
+        //5.Kasua: ISANa jarri eta izena hutsa =ezabatu
+
+        if(!empty($isan_post) && empty($izena_post)){
+            if($isan_existitzen_da){
+                unset($filmak[$isan_post]);
+                $filmak_bistaratu=$filmak;
+
+                $isan_post = '';
+                $urtea_post = '';
+                $puntuazioa_post = '0';
+            }
+            else{
+                $warning= "ISAN-a ez da existitzen zerrendan!";
+            }
+        }
+        //3.Kasua ISAN hutsa badago eta izena beteta, bilatu filma
+        else if(empty($isan_post) && !empty($izena_post)){
+            $emaitzak=[];
+            $bilatu= strtolower($izena_post);
+
+            foreach($filmak as $isan => $film){
+                if(strpos(strtolower($film['izena']), $bilatu) !==false){
+                    $emaitzak[$isan]=$film;
+                }
+            }
+            if (empty($emaitzak)){
+                $warning="Ez da aurkitu '$izena_post' izeneko filmerik";
+            }
+            else{
+                $filmak_bistaratu=$emaitzak;
+            }
+        }
+
     // 4. Kasua: ISANa eguneratu existitzen bada
 
-        if($isan_existitzen_da && !empty($izena_post) && !empty($urtea_post)){
+        else if($isan_existitzen_da && !empty($izena_post) && !empty($urtea_post)){
             $filmak[$isan_post]['izena'] = $izena_post;
             $filmak[$isan_post]['puntuazioa'] = $puntuazioa_post;
+            $filmak_bistaratu=$filmak;
 
             // Formularioa garbitu
             $izena_post = '';
@@ -37,8 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
             $puntuazioa_post = '0';
 
         }
-
-        if(!$isan_existitzen_da && strlen($isan_post) == 8 && !empty($izena_post) && !empty($urtea_post)){
+        //2. ISAN berria gehitu formulariora
+        else if(!$isan_existitzen_da && strlen($isan_post) == 8 && !empty($izena_post) && !empty($urtea_post)){
 
             $filmak[$isan_post]=[
                 'izena' => $izena_post,
@@ -46,6 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                 'puntuazioa' => $puntuazioa_post
             ];
 
+            $filmak_bistaratu=$filmak;
             $izena_post="";
             $isan_post="";
             $urtea_post="";
@@ -83,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($filmak as $isan => $film): ?>
+                    <?php foreach ($filmak_bistaratu as $isan => $film): ?>
                         <tr>
                             <td><?= htmlspecialchars($isan) ?></td>
                             <td><?= htmlspecialchars($film['izena']) ?></td>
