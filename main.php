@@ -1,4 +1,12 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['erabiltzailea']) || empty($_SESSION['erabiltzailea'])){
+    header("Location:index.php");
+    exit();
+}
+$erabiltzailea= $_SESSION['erabiltzailea'];
+
 $warning="";
 
  // Filmen datuak berreskuratzeko array asoziatiboa
