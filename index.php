@@ -25,6 +25,7 @@ if($_SERVER['REQUEST_METHOD']== 'POST'){
     <title>Top Movies</title>
 </head>
 <body>
+    
     <h1>Ongi etorri TOP Movies aplikaziora</h1>
     <?php if(!empty($error)):?>
         <p style="color:red;font-weight:bold;"><?= htmlspecialchars($error)?></p>
