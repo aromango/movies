@@ -1,11 +1,4 @@
 <?php
-session_start();
-
-if (!isset($_SESSION['erabiltzailea']) || empty($_SESSION['erabiltzailea'])){
-    header("Location:index.php");
-    exit();
-}
-$erabiltzailea= $_SESSION['erabiltzailea'];
 
 $warning="";
 
@@ -112,6 +105,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     <title>Document</title>
 </head>
 <body>
+    <nav style="background: #f0f0f0; padding: 10px; margin-bottom: 15px;">
+    <strong>Aldatu bertsioa:</strong>
+    <a href="main.php">Main (Hidden)</a> | 
+    <a href="cookies.php">Cookies</a> | 
+    <a href="session.php">Session</a>
+</nav>
     <h1>Erabiltzailearen filmak</h1>
     <div id="zerrenda">
         <?php if (empty($filmak)): ?>
